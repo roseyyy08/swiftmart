@@ -89,7 +89,7 @@ class CategoryController extends Controller
             $category->save();
             return redirect()
               ->route('categories.index')
-              ->with('succes', 'Kategori berhasil diubah!');
+              ->with('success', 'Kategori berhasil diubah!');
     }
 
     /**
@@ -102,6 +102,6 @@ class CategoryController extends Controller
 
         return redirect()
           ->route('categories.index')
-          ->with('succes', 'Kategori berhasil dihapus');
+          ->with('success', 'Kategori berhasil dihapus');
     }
 }
