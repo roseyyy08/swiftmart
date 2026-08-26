@@ -23,7 +23,7 @@ class CategoryController extends Controller
     {
         return view('categories.create');
     }
-
+ 
     /**
      * Store a newly created resource in storage.
      */
@@ -61,7 +61,7 @@ class CategoryController extends Controller
      */
     public function edit(string $id)
     {
-        $category = Category::findOrfail($id);
+        $category = Category::findOrFail($id);
         return view('categories.edit', compact('category'));
     }
 
@@ -82,7 +82,7 @@ class CategoryController extends Controller
 
             ]
             );
-            $category = Category::findOrfail($id);
+            $category = Category::findOrFail($id);
             $category->name= $request->name;
             $category->description = $request->description;
 
@@ -97,7 +97,7 @@ class CategoryController extends Controller
      */
     public function destroy(string $id)
     {
-        $category = Category::findOrfail($id);
+        $category = Category::findOrFail($id);
         $category->delete();
 
         return redirect()
