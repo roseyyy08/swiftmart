@@ -13,7 +13,7 @@
 
             <div class="form-group mb-2">
                 <label for="name" class="form-label">Name<span class="text-danger">*</span></label>
-                <input type="text" class="form-control @error('name') is-invalid @enderror" name="name" id="name">
+                <input type="text" value="{{ old('name') }}" class="form-control @error('name') is-invalid @enderror" name="name" id="name">
 
                 @error('name')
                 <span class="invalid-feedback d-block" role="alert">
