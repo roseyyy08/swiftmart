@@ -16,6 +16,7 @@ Route::middleware('auth')->group(function (){
     Route::resource('categories', \App\Http\Controllers\CategoryController::class);
     Route::resource('products', \App\Http\Controllers\ProductController::class);
     Route::resource('members', \App\Http\Controllers\MemberController::class);
+    Route::get('/reports', [\App\Http\Controllers\ReportController::class, 'index'])->name('reports.index');
 });
 
 Route::prefix('checkout')->name('checkout.')->group(function () {
