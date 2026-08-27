@@ -17,3 +17,12 @@ Route::middleware('auth')->group(function (){
     Route::resource('products', \App\Http\Controllers\ProductController::class);
     Route::resource('members', \App\Http\Controllers\MemberController::class);
 });
+
+Route::prefix('checkout')->name('checkout.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\SelfCheckoutController::class, 'index'])->name('index');
+    Route::post('/scan', [\App\Http\Controllers\SelfCheckoutController::class, 'scan'])->name('scan');
+    Route::post('/cart/update', [\App\Http\Controllers\SelfCheckoutController::class, 'updateCart'])->name('cart.update');
+    Route::post('/member/check', [\App\Http\Controllers\SelfCheckoutController::class, 'checkMember'])->name('member.check');
+    Route::post('/process', [\App\Http\Controllers\SelfCheckoutController::class, 'process'])->name('process');
+    Route::get('/receipt/{transaction}', [\App\Http\Controllers\SelfCheckoutController::class, 'receipt'])->name('receipt');
+});
