@@ -7,7 +7,7 @@
         <h1 class="page-title mb-3">Categories Page!</h1>
 
         <a href="{{ route('categories.create') }}" class="btn btn-primary mb-3">
-            Tambah Category
+            <i class="bi bi-plus-price"></i>Tambah Category
         </a>
 
         <table class="table table-striped table-bordered">
@@ -38,13 +38,13 @@
                         <td>
                             <a href="{{ route('categories.edit', $category->id) }}"
                                 class="btn btn-link p-0">
-                                Edit
+                                <i class="bi bi-pencil-square"></i>
                             </a>
 
                             <a href="javascript:void(0)"
                                 onclick="actionDestroy('{{ route('categories.destroy', $category->id) }}')"
                                 class="btn btn-link text-danger p-0">
-                                Hapus
+                                <i class="bi bi-trash"></i>
                             </a>
                         </td>
                     </tr>

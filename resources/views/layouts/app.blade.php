@@ -8,6 +8,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'Laravel') }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.bunny.net">
@@ -32,22 +33,34 @@
                     <ul class="navbar-nav me-auto">
                         @auth
                             <li class="nav-item">
-                                <a class="nav-link {{ request()->routeIs('dashboard') ? 'active fw-bold' : '' }}" href="{{ route('dashboard') }}">Dashboard</a>
+                                <a class="nav-link {{ request()->routeIs('dashboard') ? 'active fw-bold' : '' }}" href="{{ route('dashboard') }}">
+                                    <i class="bi bi-speedometer2"></i>Dashboard
+                                </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link {{ request()->routeIs('categories.*') ? 'active fw-bold' : '' }}" href="{{ route('categories.index') }}">Kategori</a>
+                                <a class="nav-link {{ request()->routeIs('categories.*') ? 'active fw-bold' : '' }}" href="{{ route('categories.index') }}">
+                                    <i class="bi bi-tags"></i>Kategori
+                                </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link {{ request()->routeIs('products.*') ? 'active fw-bold' : '' }}" href="{{ route('products.index') }}">Produk</a>
+                                <a class="nav-link {{ request()->routeIs('products.*') ? 'active fw-bold' : '' }}" href="{{ route('products.index') }}">
+                                    <i class="bi bi-box-seam"></i>Produk
+                                </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link {{ request()->routeIs('members.*') ? 'active fw-bold' : '' }}" href="{{ route('members.index') }}">Member</a>
+                                <a class="nav-link {{ request()->routeIs('members.*') ? 'active fw-bold' : '' }}" href="{{ route('members.index') }}">
+                                    <i class="bi bi-people"></i>Member
+                                </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link {{ request()->routeIs('reports.*') ? 'active fw-bold' : '' }}" href="{{ route('reports.index') }}">Laporan</a>
+                                <a class="nav-link {{ request()->routeIs('reports.*') ? 'active fw-bold' : '' }}" href="{{ route('reports.index') }}">
+                                    <i class="bi bi-bar-chart"></i>Laporan
+                                </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('checkout.index') }}" target="_blank">Self-Checkout ↗</a>
+                                <a class="nav-link" href="{{ route('checkout.index') }}" target="_blank">
+                                    <i class="bi bi-box-arrow-up-right"></i>Self-Checkout ↗
+                                </a>
                             </li>
                         @endauth
                     </ul>

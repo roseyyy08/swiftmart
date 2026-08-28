@@ -7,7 +7,7 @@
         <h1 class="page-title mb-3">Produk Page!</h1>
 
         <a href="{{ route('products.create') }}" class="btn btn-primary mb-3">
-            Tambah Produk
+            <i class="bi bi-plus-price"></i>Tambah Produk
         </a>
 
         <table class="table table-striped table-bordered">
@@ -51,18 +51,18 @@
                             @if ($product->stock <= 5)
                                 <span class="badge bg-danger">{{ $product->stock }}</span>
                             @else
-                                <span class="badge bg-secondary">{{ $product->stock }}</span> 
+                                <span class="badge bg-success">{{ $product->stock }}</span> 
                             @endif       
                         </td>
                         <td>
                             <a href="{{ route('products.edit', $product->id) }}" class="btn btn-link p-0">
-                                Edit
+                                <i class="bi bi-pencil-square"></i>
                             </a>
 
                             <a href="javascript:void(0)"
                                 onclick="actionDestroy('{{ route('products.destroy', $product->id) }}')"
                                 class="btn btn-link text-danger p-0">
-                                Hapus
+                                <i class="bi bi-trash"></i>
                             </a>
                         </td>
                     </tr>

@@ -7,7 +7,7 @@
         <h1 class="page-title mb-3">Members Page!</h1>
 
         <a href="{{ route('members.create') }}" class="btn btn-primary mb-3">
-            Tambah Member
+            <i class="bi bi-plus-price"></i>Tambah Member
         </a>
 
         <table class="table table-striped table-bordered">
@@ -40,13 +40,13 @@
                         <td>
                             <a href="{{ route('members.edit', $member->id) }}"
                                 class="btn btn-link p-0">
-                                Edit
+                                <i class="bi bi-pencil-square"></i>
                             </a>
 
                             <a href="javascript:void(0)"
                                 onclick="actionDestroy('{{ route('members.destroy', $member->id) }}')"
                                 class="btn btn-link text-danger p-0">
-                                Hapus
+                                <i class="bi bi-trash"></i>
                             </a>
                         </td>
                     </tr>
