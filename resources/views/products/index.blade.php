@@ -47,7 +47,13 @@
                         <td>{{ $product->category->name ?? '-' }}</td>
                         <td>{{ $product->barcode }}</td>
                         <td>Rp{{ number_format($product->price, 0, ',', '.') }}</td>
-                        <td>{{ $product->stock }}</td>
+                        <td>
+                            @if ($product->stock <= 5)
+                                <span class="badge bg-danger">{{ $product->stock }}</span>
+                            @else
+                                <span class="badge bg-secondary">{{ $product->stock }}</span> 
+                            @endif       
+                        </td>
                         <td>
                             <a href="{{ route('products.edit', $product->id) }}" class="btn btn-link p-0">
                                 Edit

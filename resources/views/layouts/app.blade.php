@@ -32,19 +32,22 @@
                     <ul class="navbar-nav me-auto">
                         @auth
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('dashboard') }}">Dashboard</a>
+                                <a class="nav-link {{ request()->routeIs('dashboard') ? 'active fw-bold' : '' }}" href="{{ route('dashboard') }}">Dashboard</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('categories.index') }}">Kategori</a>
+                                <a class="nav-link {{ request()->routeIs('categories.*') ? 'active fw-bold' : '' }}" href="{{ route('categories.index') }}">Kategori</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('products.index') }}">Produk</a>
+                                <a class="nav-link {{ request()->routeIs('products.*') ? 'active fw-bold' : '' }}" href="{{ route('products.index') }}">Produk</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('members.index') }}">Member</a>
+                                <a class="nav-link {{ request()->routeIs('members.*') ? 'active fw-bold' : '' }}" href="{{ route('members.index') }}">Member</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('reports.index') }}">Laporan</a>
+                                <a class="nav-link {{ request()->routeIs('reports.*') ? 'active fw-bold' : '' }}" href="{{ route('reports.index') }}">Laporan</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('checkout.index') }}" target="_blank">Self-Checkout ↗</a>
                             </li>
                         @endauth
                     </ul>
