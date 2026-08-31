@@ -6,7 +6,7 @@
         <div class="col-md-5">
             <div class="card">
                 <div class="card-body text-center">
-                    <h4 class="text-success">✓ Pembayaran Berhasil</h4>
+                    <h4 class="text-success"><i class="bi bi-check-circle-fill"></i> Pembayaran Berhasil</h4>
                     <p class="text-muted">Terima kasih sudah belanja di SwiftMart</p>
 
                     <hr>

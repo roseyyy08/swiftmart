@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="container py-4">
-        <h1 class="page-title mb-3">Laporan Penjualan</h1>
+        <h1 class="page-title mb-3"><i class="bi bi-bar-chart-line"></i> Laporan Penjualan</h1>
 
         <div class="row g-3 mb-3">
             <div class="col-md-4">
