@@ -12,70 +12,100 @@ class SelfCheckoutController extends Controller
 {
     public function index()
     {
-        $cart = session('cart', []);
-        $member = session('member');
-        return view('checkout.index', compact('cart', 'member'));
+        // <== BARU: bikin token unik tiap kali layar checkout dibuka,
+        // dan siapin "papan pengumuman" kosong buat token ini
+        $token = Str::random(6);
+        cache()->put("kiosk_{$token}", ['cart' => [], 'member' => null], now()->addMinutes(30));
+
+        return view('checkout.index', compact('token'));
+    }
+
+    // <== BARU: dipanggil pas HP buka link pairing-nya
+    public function scanDevice($token)
+    {
+        if (!cache()->has("kiosk_{$token}")) {
+            abort(404, 'Sesi checkout tidak ditemukan atau sudah kadaluarsa. Buka ulang layar checkout di kiosk.');
+        }
+
+        return view('checkout.scan-device', compact('token'));
+    }
+
+    // <== BARU: dipanggil layar laptop tiap beberapa detik buat "ngintip" papan pengumuman
+    public function cartState($token)
+    {
+        $state = cache()->get("kiosk_{$token}", ['cart' => [], 'member' => null]);
+        return response()->json($state);
     }
 
     public function scan(Request $request)
     {
+        $key = "kiosk_{$request->token}"; // <== BARU
+        $state = cache()->get($key, ['cart' => [], 'member' => null]); // <== BARU (ganti dari session)
+
         $product = Product::where('barcode', $request->barcode)->first();
 
         if (!$product) {
             return response()->json(['success' => false, 'message' => 'Produk tidak ditemukan!']);
         }
 
-        $cart = session('cart', []);
-
-        if (isset($cart[$product->id])) {
-            $cart[$product->id]['quantity']++;
+        if (isset($state['cart'][$product->id])) {
+            $state['cart'][$product->id]['quantity']++;
         } else {
-            $cart[$product->id] = [
+            $state['cart'][$product->id] = [
                 'name' => $product->name,
                 'price' => $product->price,
                 'quantity' => 1,
             ];
         }
 
-        session(['cart' => $cart]);
+        cache()->put($key, $state, now()->addMinutes(30)); // <== BARU (ganti dari session)
 
-        return response()->json(['success' => true, 'cart' => $cart]);
+        return response()->json(['success' => true, 'cart' => $state['cart']]);
     }
 
     public function updateCart(Request $request)
     {
-        $cart = session('cart', []);
+        $key = "kiosk_{$request->token}"; // <== BARU
+        $state = cache()->get($key, ['cart' => [], 'member' => null]); // <== BARU
+
         $productId = $request->product_id;
         $quantity = $request->quantity;
 
         if ($quantity <= 0) {
-            unset($cart[$productId]);
+            unset($state['cart'][$productId]);
         } else {
-            $cart[$productId]['quantity'] = $quantity;
+            $state['cart'][$productId]['quantity'] = $quantity;
         }
 
-        session(['cart' => $cart]);
+        cache()->put($key, $state, now()->addMinutes(30)); // <== BARU
 
-        return response()->json(['success' => true, 'cart' => $cart]);
+        return response()->json(['success' => true, 'cart' => $state['cart']]);
     }
 
     public function checkMember(Request $request)
     {
+        $key = "kiosk_{$request->token}"; // <== BARU
+        $state = cache()->get($key, ['cart' => [], 'member' => null]); // <== BARU
+
         $member = Member::where('phone', $request->phone)->first();
 
         if (!$member) {
             return response()->json(['success' => false, 'message' => 'Member tidak ditemukan!']);
         }
 
-        session(['member' => $member]);
+        $state['member'] = $member; // <== BARU (ganti dari session)
+        cache()->put($key, $state, now()->addMinutes(30)); // <== BARU
 
         return response()->json(['success' => true, 'member' => $member]);
     }
 
     public function process(Request $request)
     {
-        $cart = session('cart', []);
-        $member = session('member');
+        $key = "kiosk_{$request->token}"; // <== BARU
+        $state = cache()->get($key, ['cart' => [], 'member' => null]); // <== BARU
+
+        $cart = $state['cart'];
+        $member = $state['member'];
 
         if (empty($cart)) {
             return response()->json(['success' => false, 'message' => 'Keranjang masih kosong!']);
@@ -109,7 +139,7 @@ class SelfCheckoutController extends Controller
             Member::where('id', $member['id'])->increment('points', $poin);
         }
 
-        session()->forget(['cart', 'member']);
+        cache()->forget($key); // <== BARU (ganti dari session()->forget)
 
         return response()->json([
             'success' => true,

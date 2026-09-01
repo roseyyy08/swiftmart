@@ -26,4 +26,6 @@ Route::prefix('checkout')->name('checkout.')->group(function () {
     Route::post('/member/check', [\App\Http\Controllers\SelfCheckoutController::class, 'checkMember'])->name('member.check');
     Route::post('/process', [\App\Http\Controllers\SelfCheckoutController::class, 'process'])->name('process');
     Route::get('/receipt/{transaction}', [\App\Http\Controllers\SelfCheckoutController::class, 'receipt'])->name('receipt');
+    Route::get('/pair/{token}', [\App\Http\Controllers\SelfCheckoutController::class, 'scanDevice'])->name('scan-device');
+    Route::get('/cart-state/{token}', [\App\Http\Controllers\SelfCheckoutController::class, 'cartState'])->name('cart-state');
 });
