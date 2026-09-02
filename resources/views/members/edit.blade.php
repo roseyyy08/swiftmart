@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="container py-4">
-        <h1 class="page-title mb-3">Update Members!</h1>
+        <h1 class="page-title mb-3"><i class="bi bi-pencil-square"></i> Edit Member</h1>
 
          <div class="row">
             <div class="col-md-6">
@@ -41,13 +41,11 @@
             </div>
 
 
-            <button type="submit" class="btn btn-primary">Simpan</button>
-            <a href="{{ route('members.index') }}" class="btn btn-secondary">Batal</a>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Simpan</button>
+            <a href="{{ route('members.index') }}" class="btn btn-secondary"><i class="bi bi-x-lg me-1"></i>Batal</a>
         </form>
             </div>
         </div>
 
-        
-
-    </div> 
+    </div>
 @endsection

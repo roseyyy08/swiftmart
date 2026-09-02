@@ -4,10 +4,10 @@
 
 @section('content')
     <div class="container py-4">
-        <h1 class="page-title mb-3">Members Page!</h1>
+        <h1 class="page-title mb-3"><i class="bi bi-people"></i> Kelola Member</h1>
 
         <a href="{{ route('members.create') }}" class="btn btn-primary mb-3">
-            <i class="bi bi-plus-price"></i>Tambah Member
+            <i class="bi bi-plus-circle me-1"></i>Tambah Member
         </a>
 
         <table class="table table-striped table-bordered">

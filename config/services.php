@@ -35,4 +35,6 @@ return [
         ],
     ],
 
+    'kiosk_token' => env('KIOSK_TOKEN', 'SWIFTMART01'),
+
 ];

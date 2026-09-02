@@ -4,10 +4,10 @@
 
 @section('content')
     <div class="container py-4">
-        <h1 class="page-title mb-3">Produk Page!</h1>
+        <h1 class="page-title mb-3"><i class="bi bi-box-seam"></i> Kelola Produk</h1>
 
         <a href="{{ route('products.create') }}" class="btn btn-primary mb-3">
-            <i class="bi bi-plus-price"></i>Tambah Produk
+            <i class="bi bi-plus-circle me-1"></i>Tambah Produk
         </a>
 
         <table class="table table-striped table-bordered">
@@ -51,8 +51,8 @@
                             @if ($product->stock <= 5)
                                 <span class="badge bg-danger">{{ $product->stock }}</span>
                             @else
-                                <span class="badge bg-success">{{ $product->stock }}</span> 
-                            @endif       
+                                <span class="badge bg-success">{{ $product->stock }}</span>
+                            @endif
                         </td>
                         <td>
                             <a href="{{ route('products.edit', $product->id) }}" class="btn btn-link p-0">
