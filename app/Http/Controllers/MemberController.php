@@ -13,7 +13,12 @@ class MemberController extends Controller
     public function index()
     {
         $members = Member::paginate(10);
-        return view('members.index', compact('members'));
+
+        $totalMember = Member::count();
+        $totalPoinBeredar = Member::sum('points');
+        $rataRataPoin = $totalMember > 0 ? round($totalPoinBeredar / $totalMember) : 0;
+
+        return view('members.index', compact('members', 'totalMember', 'totalPoinBeredar', 'rataRataPoin'));
     }
 
     /**

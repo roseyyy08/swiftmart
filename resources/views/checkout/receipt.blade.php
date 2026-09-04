@@ -6,6 +6,7 @@
         <div class="col-md-5">
             <div class="card">
                 <div class="card-body text-center">
+                    <div class="brand-logo fs-4 mb-3">Swift<span class="accent">Mart</span></div>
                     <h4 class="text-success"><i class="bi bi-check-circle-fill"></i> Pembayaran Berhasil</h4>
                     <p class="text-muted">Terima kasih sudah belanja di SwiftMart</p>
 
@@ -13,19 +14,19 @@
 
                     <div class="text-start small">
                         <div class="d-flex justify-content-between">
-                            <span>No. Invoice</span>
+                            <span class="text-muted">No. Invoice</span>
                             <span>{{ $transaction->invoice }}</span>
                         </div>
                         <div class="d-flex justify-content-between">
-                            <span>Tanggal</span>
+                            <span class="text-muted">Tanggal</span>
                             <span>{{ $transaction->created_at->format('d/m/Y H:i') }}</span>
                         </div>
                         <div class="d-flex justify-content-between">
-                            <span>Member</span>
+                            <span class="text-muted">Member</span>
                             <span>{{ $transaction->member->name ?? 'Guest' }}</span>
                         </div>
                         <div class="d-flex justify-content-between">
-                            <span>Metode Bayar</span>
+                            <span class="text-muted">Metode Bayar</span>
                             <span>{{ strtoupper($transaction->payment_method) }}</span>
                         </div>
                     </div>
@@ -36,7 +37,7 @@
                         @foreach ($transaction->details as $detail)
                             <tr>
                                 <td>{{ $detail->product->name ?? '-' }}</td>
-                                <td class="text-center">{{ $detail->quantity }}x</td>
+                                <td class="text-center text-muted">{{ $detail->quantity }}x</td>
                                 <td class="text-end">Rp{{ number_format($detail->subtotal, 0, ',', '.') }}</td>
                             </tr>
                         @endforeach

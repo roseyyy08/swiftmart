@@ -3,7 +3,8 @@
 @section('content')
 <div class="container-fluid py-4">
     <div class="text-center mb-4">
-        <h2>SwiftMart <small class="text-muted fs-6"><i class="bi bi-cart-check"></i> Self-Checkout</small></h2>
+        <div class="brand-logo fs-3">Swift<span class="accent">Mart</span></div>
+        <small class="text-muted"><i class="bi bi-cart-check"></i> Self-Checkout</small>
     </div>
 
     <div class="row">
@@ -87,7 +88,7 @@
 
             <div class="modal-header">
                 <h5 class="modal-title">Pilih Metode Pembayaran</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
 
             <div class="modal-body">

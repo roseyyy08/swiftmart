@@ -9,10 +9,35 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with('category')->paginate(10);
-        return view('products.index', compact('products'));
+        $query = Product::with('category');
+
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                ->orWhere('barcode', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        if ($request->stock_filter === 'low') {
+            $query->where('stock', '<=', 5);
+        } elseif ($request->stock_filter === 'empty') {
+            $query->where('stock', 0);
+        }
+
+        $products = $query->paginate(10)->withQueryString();
+
+        $totalProduk = Product::count();
+        $stokMenipis = Product::where('stock', '<=', 5)->count();
+        $nonaktif = Product::where('is_active', false)->count();
+        $categories = \App\Models\Category::all();
+
+        return view('products.index', compact('products', 'totalProduk', 'stokMenipis', 'nonaktif', 'categories'));
     }
 
     public function create()

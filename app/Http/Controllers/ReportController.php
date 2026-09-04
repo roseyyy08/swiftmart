@@ -14,20 +14,25 @@ class ReportController extends Controller
         if ($request->filled('date_from')) {
             $query->whereDate('created_at', '>=', $request->date_from);
         }
-
         if ($request->filled('date_to')) {
             $query->whereDate('created_at', '<=', $request->date_to);
         }
-
         if ($request->filled('payment_method')) {
             $query->where('payment_method', $request->payment_method);
+        }
+        // <== BARU
+        if ($request->tipe_pelanggan === 'member') {
+            $query->whereNotNull('member_id');
+        } elseif ($request->tipe_pelanggan === 'guest') {
+            $query->whereNull('member_id');
         }
 
         $transactions = $query->latest()->paginate(10)->withQueryString();
 
         $totalPendapatan = (clone $query)->sum('total');
         $totalTransaksi = (clone $query)->count();
+        $rataRata = $totalTransaksi > 0 ? $totalPendapatan / $totalTransaksi : 0;
 
-        return view('reports.index', compact('transactions', 'totalPendapatan', 'totalTransaksi'));
+        return view('reports.index', compact('transactions', 'totalPendapatan', 'totalTransaksi', 'rataRata'));
     }
 }

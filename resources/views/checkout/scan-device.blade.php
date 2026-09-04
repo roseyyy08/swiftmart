@@ -2,9 +2,10 @@
 
 @section('content')
 <div class="container text-center py-4">
-    <h4 class="mb-3"><i class="bi bi-upc-scan"></i> Arahkan kamera ke barcode</h4>
+    <div class="brand-logo fs-4 mb-3">Swift<span class="accent">Mart</span></div>
+    <h5 class="mb-3"><i class="bi bi-upc-scan"></i> Arahkan kamera ke barcode</h5>
 
-    <div id="scanner-area" style="width:100%; height:65vh; background:#000; border-radius:8px; overflow:hidden;"></div>
+    <div id="scanner-area" style="width:100%; height:60vh; background:#000; border-radius:12px; overflow:hidden; border: 1px solid var(--card-border);"></div>
 
     <div id="scan-status" class="alert alert-secondary mt-3">Siap scan...</div>
 

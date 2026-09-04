@@ -13,7 +13,13 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = Category::paginate(10);
-        return view('categories.index', compact('categories'));
+
+        $totalKategori = Category::count();
+        $totalProduk = \App\Models\Product::count();
+        $totalMember = \App\Models\Member::count();
+        $transaksiHariIni = \App\Models\Transaction::whereDate('created_at', today())->count();
+
+        return view('categories.index', compact('categories', 'totalKategori', 'totalProduk', 'totalMember', 'transaksiHariIni'));
     }
 
     /**
