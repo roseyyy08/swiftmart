@@ -9,9 +9,9 @@
             <h1 class="page-heading">Laporan Penjualan</h1>
             <p class="page-subtext mb-0">Rekap transaksi berdasarkan periode, metode pembayaran, dan tipe pelanggan.</p>
         </div>
-        <button type="button" class="btn-swift-primary" disabled title="Belum tersedia">
+        <a href="{{ route('reports.export-pdf', request()->query()) }}" target="_blank" class="btn-swift-primary">
             <i class="bi bi-download me-1"></i>Export PDF
-        </button>
+        </a>
     </div>
 
     <div class="row g-3 mb-4">

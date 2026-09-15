@@ -9,9 +9,12 @@
             <h1 class="page-heading">Produk</h1>
             <p class="page-subtext mb-0">Kelola katalog produk SwiftMart.</p>
         </div>
-        <a href="{{ route('products.create') }}" class="btn-swift-primary">
-            <i class="bi bi-plus-lg me-1"></i>Tambah Produk
-        </a>
+        <div class="d-flex gap-2">
+            @include('products._restock-modal')
+            <a href="{{ route('products.create') }}" class="btn-swift-primary">
+                <i class="bi bi-plus-lg me-1"></i>Tambah Produk
+            </a>
+        </div>
     </div>
 
     <div class="row g-3 mb-4">

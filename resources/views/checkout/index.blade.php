@@ -256,7 +256,14 @@ function renderCart(cart) {
 function updateQty(productId, quantity) {
     apiPost('{{ route("checkout.cart.update") }}', { product_id: productId, quantity: quantity })
         .then(data => {
-            if (data.success) renderCart(data.cart);
+            if (data.success) {
+                renderCart(data.cart);
+            } else {
+                // <== FIX: sebelumnya kalau gagal (misal stok kurang), nggak ada
+                // pesan apapun ke user - tombol + kelihatan kayak nggak ngapa-ngapain.
+                Swal.fire({ icon: 'error', title: 'Gagal', text: data.message, timer: 1800, showConfirmButton: false });
+                if (data.cart) renderCart(data.cart); // tetep sinkronin tampilan ke qty yang valid
+            }
         });
 }
 

@@ -1,0 +1,1 @@
+<?php /**PATH C:\laragon\www\swiftmart\resources\views/products/_barcode-scanner-modal.blade.php ENDPATH**/ ?>

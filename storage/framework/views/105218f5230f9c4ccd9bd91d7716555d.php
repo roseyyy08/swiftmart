@@ -9,9 +9,12 @@
             <h1 class="page-heading">Produk</h1>
             <p class="page-subtext mb-0">Kelola katalog produk SwiftMart.</p>
         </div>
-        <a href="<?php echo e(route('products.create')); ?>" class="btn-swift-primary">
-            <i class="bi bi-plus-lg me-1"></i>Tambah Produk
-        </a>
+        <div class="d-flex gap-2">
+            <?php echo $__env->make('products._restock-modal', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+            <a href="<?php echo e(route('products.create')); ?>" class="btn-swift-primary">
+                <i class="bi bi-plus-lg me-1"></i>Tambah Produk
+            </a>
+        </div>
     </div>
 
     <div class="row g-3 mb-4">

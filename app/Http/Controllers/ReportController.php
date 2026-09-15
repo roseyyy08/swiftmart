@@ -7,7 +7,11 @@ use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * Bangun query transaksi yang sudah kena filter (dipakai bareng
+     * oleh index() dan exportPdf() supaya logika filter-nya sama persis).
+     */
+    private function filteredQuery(Request $request)
     {
         $query = Transaction::with('member', 'details');
 
@@ -27,6 +31,13 @@ class ReportController extends Controller
             $query->whereNull('member_id');
         }
 
+        return $query;
+    }
+
+    public function index(Request $request)
+    {
+        $query = $this->filteredQuery($request);
+
         $transactions = $query->latest()->paginate(10)->withQueryString();
 
         $totalPendapatan = (clone $query)->sum('total');
@@ -34,5 +45,31 @@ class ReportController extends Controller
         $rataRata = $totalTransaksi > 0 ? $totalPendapatan / $totalTransaksi : 0;
 
         return view('reports.index', compact('transactions', 'totalPendapatan', 'totalTransaksi', 'rataRata'));
+    }
+
+    /**
+     * Export PDF TANPA package tambahan (tidak butuh composer require).
+     *
+     * Caranya: render halaman HTML khusus yang di-style buat kertas
+     * (bukan dark theme admin), lalu browser sendiri yang "print to PDF"
+     * lewat window.print() -> pilih "Save as PDF" di dialog print.
+     * Ini valid karena semua browser modern punya fitur print-to-pdf
+     * bawaan, jadi tidak perlu library PDF (dompdf/mpdf) di server.
+     */
+    public function exportPdf(Request $request)
+    {
+        $query = $this->filteredQuery($request);
+
+        // Ambil SEMUA data yang kena filter (tanpa pagination),
+        // karena PDF laporan harus nampilin semua baris, bukan 10 per halaman.
+        $transactions = $query->latest()->get();
+
+        $totalPendapatan = $transactions->sum('total');
+        $totalTransaksi = $transactions->count();
+        $rataRata = $totalTransaksi > 0 ? $totalPendapatan / $totalTransaksi : 0;
+
+        return view('reports.export-pdf', compact(
+            'transactions', 'totalPendapatan', 'totalTransaksi', 'rataRata'
+        ));
     }
 }

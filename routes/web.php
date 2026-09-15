@@ -14,9 +14,12 @@ Auth::routes();
 Route::middleware('auth')->group(function (){
     Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
     Route::resource('categories', \App\Http\Controllers\CategoryController::class);
+    Route::post('/products/restock-lookup', [\App\Http\Controllers\ProductController::class, 'restockLookup'])->name('products.restock-lookup');
+    Route::post('/products/restock-confirm', [\App\Http\Controllers\ProductController::class, 'restockConfirm'])->name('products.restock-confirm');
     Route::resource('products', \App\Http\Controllers\ProductController::class);
     Route::resource('members', \App\Http\Controllers\MemberController::class);
     Route::get('/reports', [\App\Http\Controllers\ReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/export-pdf', [\App\Http\Controllers\ReportController::class, 'exportPdf'])->name('reports.export-pdf');
 });
 
 Route::prefix('checkout')->name('checkout.')->group(function () {
