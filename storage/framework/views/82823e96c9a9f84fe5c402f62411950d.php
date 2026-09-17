@@ -1,27 +1,29 @@
-@extends('layouts.checkout')
 
-@section('content')
+
+<?php $__env->startSection('content'); ?>
 <div class="container text-center py-4">
     <div class="brand-logo fs-4 mb-3">Swift<span class="accent">Mart</span></div>
-    <h5 class="mb-3"><i class="bi bi-upc-scan"></i> Arahkan kamera ke barcode</h5>
+    <h5 class="mb-1"><i class="bi bi-upc-scan"></i> Scan Barcode (Admin)</h5>
+    <p class="text-muted small mb-3">Hasil scan bakal otomatis muncul di layar laptop</p>
 
-    <div id="scanner-area" style="width:100%; height:60vh; background:#000; border-radius:12px; overflow:hidden; border: 1px solid var(--card-border);"></div>
+    <div id="scanner-area" style="width:100%; height:55vh; background:#000; border-radius:12px; overflow:hidden; border: 1px solid var(--card-border);"></div>
 
     <div id="scan-status" class="alert alert-secondary mt-3">Siap scan...</div>
 
     <div class="input-group mt-2">
         <input type="text" id="manual-barcode" class="form-control" placeholder="Atau ketik manual...">
-        <button class="btn btn-dark" id="btn-manual-scan">Tambah</button>
+        <button class="btn btn-dark" id="btn-manual-scan">Kirim</button>
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('scripts')
+<?php $__env->startSection('scripts'); ?>
 <script src="https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js"></script>
 <script>
 const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-const token = '{{ $token }}';
+const token = '<?php echo e($token); ?>';
 const statusBox = document.getElementById('scan-status');
+let isProcessing = false;
 
 function showStatus(msg, ok) {
     statusBox.textContent = msg;
@@ -40,8 +42,12 @@ function beep(success) {
     } catch (e) {}
 }
 
+// Kirim hasil scan ke server. INI BEDANYA sama scan-device Self-Checkout:
+// di sini cuma "nitip" barcode-nya ke cache (lewat endpoint push), nggak
+// langsung ngapa-ngapain ke keranjang/produk. Laptop yang nentuin nanti
+// barcode ini dipakai buat apa (isi field / cari produk buat restock).
 function sendScan(barcode) {
-    fetch('{{ route("checkout.scan") }}', {
+    fetch('<?php echo e(route("admin-scan.push")); ?>', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -52,42 +58,34 @@ function sendScan(barcode) {
     })
     .then(res => res.json())
     .then(data => {
-        if (data.success) {
-            showStatus('Berhasil ditambahkan!', true);
-            beep(true);
-        } else {
-            showStatus(data.message || 'Gagal', false);
-            beep(false);
-        }
+        showStatus('Terkirim ke laptop: ' + barcode, true);
+        beep(true);
     })
-    .catch(() => showStatus('Gagal menghubungi server.', false))
+    .catch(() => {
+        showStatus('Gagal menghubungi server.', false);
+        beep(false);
+    })
     .finally(() => {
         setTimeout(() => {
             isProcessing = false;
             Quagga.start();
             showStatus('Siap scan...', true);
-        }, 1200);
+        }, 1200); // <== jeda cooldown, sama kayak di scan-device checkout
     });
 }
-
-// SCANNER
 
 Quagga.init({
     inputStream: {
         type: 'LiveStream',
         target: document.querySelector('#scanner-area'),
-        constraints: {
-            width: 1280,
-            height: 720,
-            facingMode: 'environment'
-        },
+        constraints: { width: 1280, height: 720, facingMode: 'environment' }
     },
     locator: { patchSize: 'medium', halfSample: true },
     numOfWorkers: 2,
     frequency: 10,
     decoder: { readers: ['ean_reader', 'ean_8_reader', 'code_128_reader'] },
     locate: true
-}, function(err) {
+}, function (err) {
     if (err) {
         console.error('QUAGGA ERROR:', err);
         document.getElementById('scanner-area').innerHTML =
@@ -97,25 +95,19 @@ Quagga.init({
     Quagga.start();
 });
 
-// DETEKSI + LOCK 
-
-let isProcessing = false;
-
-Quagga.onDetected(function(result) {
-    if (isProcessing) return; 
-
+Quagga.onDetected(function (result) {
+    if (isProcessing) return;
     isProcessing = true;
-    Quagga.pause(); 
-
+    Quagga.pause();
     sendScan(result.codeResult.code);
 });
 
-// SCAN MANUAL 
-document.getElementById('btn-manual-scan').addEventListener('click', function() {
+document.getElementById('btn-manual-scan').addEventListener('click', function () {
     const code = document.getElementById('manual-barcode').value.trim();
     if (!code) return;
     sendScan(code);
     document.getElementById('manual-barcode').value = '';
 });
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.checkout', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\swiftmart\resources\views/admin-scan/page.blade.php ENDPATH**/ ?>

@@ -92,7 +92,6 @@
             text-align: center;
         }
 
-        /* Saat benar-benar di-print / disimpan jadi PDF, sembunyikan toolbar-nya */
         @media print {
             .toolbar { display: none; }
             body { margin: 12mm; }
@@ -182,8 +181,6 @@
     </footer>
 
     <script>
-        // Auto-buka dialog print begitu halaman selesai render,
-        // supaya user tinggal pilih "Save as PDF" tanpa perlu klik tombol lagi.
         window.addEventListener('load', function () {
             setTimeout(function () { window.print(); }, 300);
         });

@@ -35,7 +35,7 @@ class ProductController extends Controller
         $totalProduk = Product::count();
         $stokMenipis = Product::where('stock', '<=', 5)->count();
         $nonaktif = Product::where('is_active', false)->count();
-        $categories = \App\Models\Category::all();
+        $categories = Category::all();
 
         return view('products.index', compact('products', 'totalProduk', 'stokMenipis', 'nonaktif', 'categories'));
     }
@@ -145,15 +145,9 @@ class ProductController extends Controller
 
         return redirect()
             ->route('products.index')
-            ->with('success', 'Produk berhasil dihapus');
+            ->with('success', 'Produk berhasil dihapus!');
     }
 
-    /**
-     * Dipanggil AJAX pas admin scan barcode di modal "Terima Stok Masuk".
-     * Tugasnya cuma CARI produk berdasarkan barcode yang di-scan -
-     * belum ngubah apa-apa ke database, cuma ngasih tau admin
-     * "ini barcode punya produk apa, stok sekarang berapa".
-     */
     public function restockLookup(Request $request)
     {
         $request->validate([
@@ -163,10 +157,6 @@ class ProductController extends Controller
         $product = Product::where('barcode', $request->barcode)->first();
 
         if (!$product) {
-            // <== BARU: barcode belum terdaftar sama sekali di database.
-            // Ini kejadian normal kalau produknya beneran baru pertama kali
-            // masuk toko (bukan restock produk lama) - admin diarahkan ke
-            // form Tambah Produk biasa, bukan dianggap error.
             return response()->json(['found' => false]);
         }
 
@@ -181,12 +171,6 @@ class ProductController extends Controller
         ]);
     }
 
-    /**
-     * Dipanggil setelah admin scan barcode (ketemu produknya) DAN
-     * udah ngisi berapa jumlah yang masuk dari dus/kardus. Ini yang
-     * BENERAN nambahin stok - pakai increment(), bukan nge-timpa angka,
-     * jadi nggak perlu itung manual "stok lama + stok baru" sendiri.
-     */
     public function restockConfirm(Request $request)
     {
         $request->validate([

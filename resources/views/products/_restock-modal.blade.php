@@ -1,13 +1,3 @@
-{{--
-    Modal "Terima Stok Masuk" - buat kasus dus barang baru datang ke toko.
-    BEDA sama modal scan di form Tambah/Edit Produk:
-    - Modal ini nyari produk yang SUDAH ADA lalu NAMBAH stoknya (increment)
-    - Modal satunya cuma ngisi field barcode di form Tambah Produk BARU
-
-    Alurnya: scan sekali (barcode-nya sama untuk semua unit di 1 dus) ->
-    sistem ketemu produknya -> admin ketik jumlah yang masuk dari dus ->
-    stok nambah otomatis, nggak perlu itung manual.
---}}
 <button type="button" class="btn-swift-outline-gold" data-bs-toggle="modal" data-bs-target="#restockModal">
     <i class="bi bi-box-seam"></i> Terima Stok Masuk
 </button>
@@ -21,21 +11,18 @@
             </div>
             <div class="modal-body">
 
-                {{-- STATE 1: scan kamera --}}
                 <div id="restock-step-scan">
-                    <p class="text-muted small mb-2 text-center">
-                        Scan barcode di kemasan (cukup 1 kali, semua unit di dus yang sama barcode-nya sama)
-                    </p>
-                    <div id="restock-scanner-area" style="width:100%; height:240px; background:#000; border-radius:10px; overflow:hidden;"></div>
-                    <div id="restock-scan-status" class="mt-2 small text-muted text-center">Menyalakan kamera...</div>
+                    <p class="mb-1 text-center">Buka alamat ini di browser HP kamu:</p>
+                    <p class="fs-6 fw-bold text-center" style="word-break: break-all;">{{ url('/admin-scan/' . config('services.kiosk_token')) }}</p>
+                    <p class="text-muted small text-center">Scan cukup 1x per jenis produk (semua unit di dus yang sama barcode-nya sama).</p>
+                    <div id="restock-scan-status" class="alert alert-secondary text-center">Menunggu scan dari HP...</div>
 
-                    <div class="input-group mt-3">
+                    <div class="input-group mt-2">
                         <input type="text" id="restock-manual-barcode" class="form-control" placeholder="Atau ketik barcode manual...">
                         <button class="btn btn-dark" id="restock-btn-manual" type="button">Cari</button>
                     </div>
                 </div>
 
-                {{-- STATE 2: produk ketemu, minta jumlah --}}
                 <div id="restock-step-found" class="d-none text-center">
                     <i class="bi bi-check-circle-fill text-success fs-1"></i>
                     <h5 class="mt-2 mb-0" id="restock-product-name">-</h5>
@@ -52,7 +39,6 @@
                     </button>
                 </div>
 
-                {{-- STATE 3: barcode nggak ketemu sama sekali --}}
                 <div id="restock-step-notfound" class="d-none text-center">
                     <i class="bi bi-question-circle-fill text-warning fs-1"></i>
                     <p class="mt-2">Barcode <strong id="restock-notfound-code"></strong> belum terdaftar.</p>
@@ -63,7 +49,6 @@
                     </button>
                 </div>
 
-                {{-- STATE 4: sukses --}}
                 <div id="restock-step-success" class="d-none text-center">
                     <i class="bi bi-check-circle-fill text-success fs-1"></i>
                     <p class="mt-2"><strong id="restock-success-name"></strong></p>
@@ -78,13 +63,11 @@
     </div>
 </div>
 
-@once
-    <script src="https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js"></script>
-@endonce
 <script>
 (function () {
     const modalEl = document.getElementById('restockModal');
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+    const adminScanToken = '{{ config('services.kiosk_token') }}';
 
     const stepScan = document.getElementById('restock-step-scan');
     const stepFound = document.getElementById('restock-step-found');
@@ -92,48 +75,40 @@
     const stepSuccess = document.getElementById('restock-step-success');
     const statusEl = document.getElementById('restock-scan-status');
 
-    let quaggaRunning = false;
     let currentProduct = null;
-
+    let pollTimer = null;
+    let baselineTs = 0; 
     function showStep(step) {
         [stepScan, stepFound, stepNotfound, stepSuccess].forEach(el => el.classList.add('d-none'));
         step.classList.remove('d-none');
     }
 
-    function startCamera() {
-        statusEl.textContent = 'Menyalakan kamera...';
-        Quagga.init({
-            inputStream: {
-                type: 'LiveStream',
-                target: document.querySelector('#restock-scanner-area'),
-                constraints: { width: 640, height: 480, facingMode: 'environment' }
-            },
-            locator: { patchSize: 'medium', halfSample: true },
-            numOfWorkers: 2,
-            frequency: 10,
-            decoder: { readers: ['ean_reader', 'ean_8_reader', 'code_128_reader'] },
-            locate: true
-        }, function (err) {
-            if (err) {
-                console.error('QUAGGA ERROR:', err);
-                statusEl.textContent = 'Kamera tidak tersedia, pakai input manual di bawah.';
-                return;
-            }
-            Quagga.start();
-            quaggaRunning = true;
-            statusEl.textContent = 'Arahkan kamera ke barcode...';
-        });
+    function startPolling() {
+        fetch('{{ url('/admin-scan') }}/' + adminScanToken + '/poll')
+            .then(res => res.json())
+            .then(data => {
+                baselineTs = data.ts || 0;
+                if (pollTimer) clearInterval(pollTimer);
+                pollTimer = setInterval(function () {
+                    fetch('{{ url('/admin-scan') }}/' + adminScanToken + '/poll')
+                        .then(res => res.json())
+                        .then(d => {
+                            if (d.barcode && d.ts > baselineTs) {
+                                baselineTs = d.ts;
+                                lookupBarcode(d.barcode);
+                            }
+                        });
+                }, 1500);
+            });
     }
 
-    function stopCamera() {
-        if (quaggaRunning) {
-            Quagga.stop();
-            quaggaRunning = false;
-        }
+    function stopPolling() {
+        if (pollTimer) clearInterval(pollTimer);
+        pollTimer = null;
     }
 
     function lookupBarcode(barcode) {
-        stopCamera();
+        stopPolling();
         statusEl.textContent = 'Mencari produk...';
 
         fetch('{{ route("products.restock-lookup") }}', {
@@ -167,17 +142,14 @@
 
     modalEl.addEventListener('shown.bs.modal', function () {
         showStep(stepScan);
-        startCamera();
+        statusEl.textContent = 'Menunggu scan dari HP...';
+        statusEl.className = 'alert alert-secondary text-center';
+        startPolling();
     });
 
     modalEl.addEventListener('hidden.bs.modal', function () {
-        stopCamera();
+        stopPolling();
         currentProduct = null;
-    });
-
-    Quagga.onDetected(function (result) {
-        if (!quaggaRunning) return;
-        lookupBarcode(result.codeResult.code);
     });
 
     document.getElementById('restock-btn-manual').addEventListener('click', function () {
@@ -188,15 +160,21 @@
 
     document.getElementById('restock-btn-scan-again').addEventListener('click', function () {
         showStep(stepScan);
-        startCamera();
+        statusEl.textContent = 'Menunggu scan dari HP...';
+        statusEl.className = 'alert alert-secondary text-center';
+        startPolling();
     });
     document.getElementById('restock-btn-scan-again-2').addEventListener('click', function () {
         showStep(stepScan);
-        startCamera();
+        statusEl.textContent = 'Menunggu scan dari HP...';
+        statusEl.className = 'alert alert-secondary text-center';
+        startPolling();
     });
     document.getElementById('restock-btn-next').addEventListener('click', function () {
         showStep(stepScan);
-        startCamera();
+        statusEl.textContent = 'Menunggu scan dari HP...';
+        statusEl.className = 'alert alert-secondary text-center';
+        startPolling();
     });
 
     document.getElementById('restock-btn-confirm').addEventListener('click', function () {

@@ -2,12 +2,6 @@
 
 @section('content')
 <style>
-    /* ==================== VERSI CETAK STRUK ====================
-       Disembunyikan di layar (display:none), CUMA muncul pas di-print.
-       Lebar 80mm = lebar kertas thermal printer kasir pada umumnya
-       (kalau printernya 58mm, tinggal ganti angka width di bawah).
-       Kalau nggak ada printer thermal, dialog print browser tetap
-       bisa "Save as PDF" atau print ke printer biasa. */
     .print-receipt { display: none; }
 
     @media print {
@@ -35,7 +29,7 @@
 <div class="print-receipt">
     <div class="center">
         <strong>SWIFTMART</strong><br>
-        Self-Checkout System
+        SelfCheckout System
     </div>
     <div class="line"></div>
     {{ $transaction->invoice }}<br>

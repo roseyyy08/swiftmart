@@ -40,7 +40,7 @@ class CategoryController extends Controller
             'description' => 'required',
         ], [
             'name.required' => 'Nama harus diisi!',
-            'description.required' => 'Description harus diisi!',
+            'description.required' => 'Deskripsi harus diisi!',
         ]);
 
         Category::create([
@@ -83,8 +83,8 @@ class CategoryController extends Controller
             ],
 
             [
-                'name.required' => "nama harus diisi!",
-                'description.required' => 'Description harus diisi!',
+                'name.required' => "Nama harus diisi!",
+                'description.required' => 'Deskripsi harus diisi!',
 
             ]
             );
@@ -108,6 +108,6 @@ class CategoryController extends Controller
 
         return redirect()
           ->route('categories.index')
-          ->with('success', 'Kategori berhasil dihapus');
+          ->with('success', 'Kategori berhasil dihapus!');
     }
 }

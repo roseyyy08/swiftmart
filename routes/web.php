@@ -32,3 +32,10 @@ Route::prefix('checkout')->name('checkout.')->group(function () {
     Route::get('/pair/{token}', [\App\Http\Controllers\SelfCheckoutController::class, 'scanDevice'])->name('scan-device');
     Route::get('/cart-state/{token}', [\App\Http\Controllers\SelfCheckoutController::class, 'cartState'])->name('cart-state');
 });
+
+// Khusus buat HP admin scan barcode (bukan buat customer, beda dari checkout).
+Route::get('/admin-scan/{token}', [\App\Http\Controllers\AdminScanController::class, 'page'])->name('admin-scan.page');
+Route::post('/admin-scan/push', [\App\Http\Controllers\AdminScanController::class, 'push'])->name('admin-scan.push');
+
+// poll() dipanggil dari LAPTOP (halaman admin Produk), makanya wajib login.
+Route::middleware('auth')->get('/admin-scan/{token}/poll', [\App\Http\Controllers\AdminScanController::class, 'poll'])->name('admin-scan.poll');

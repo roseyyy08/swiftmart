@@ -8,12 +8,11 @@
     </div>
 
     <div class="row">
-        {{-- KIRI: Pairing HP + input manual --}}
         <div class="col-md-7">
             <div class="card mb-3">
                 <div class="card-body text-center">
-                    <h5 class="card-title"><i class="bi bi-phone"></i> Scan pakai HP</h5>
-                    <p class="mb-1">Buka alamat ini di browser HP kamu:</p>
+                    <h5 class="card-title"><i class="bi bi-phone"></i> Scan dengan Handphone</h5>
+                    <p class="mb-1">Buka alamat ini di browser Handphone:</p>
                     <p class="fs-5 fw-bold">{{ url('/checkout/pair/' . $token) }}</p>
                     <p class="text-muted small">Pastikan HP terhubung ke WiFi yang sama.</p>
                 </div>
@@ -47,7 +46,6 @@
             </div>
         </div>
 
-        {{-- KANAN: Keranjang --}}
         <div class="col-md-5">
             <div class="card">
                 <div class="card-body">
@@ -81,7 +79,6 @@
     </div>
 </div>
 
-{{-- Modal Pembayaran --}}
 <div class="modal fade" id="paymentModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -162,7 +159,7 @@
 @section('scripts')
 <script>
 const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-const token = '{{ $token }}'; // <== BARU
+const token = '{{ $token }}'; 
 
 function apiPost(url, data) {
     return fetch(url, {
@@ -172,15 +169,13 @@ function apiPost(url, data) {
             'X-CSRF-TOKEN': csrfToken,
             'Accept': 'application/json'
         },
-        body: JSON.stringify({ ...data, token }) // <== BARU: token selalu ikut terkirim
+        body: JSON.stringify({ ...data, token })
     }).then(res => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
     });
 }
 
-// ==================== BARU: POLLING KERANJANG ====================
-// Setiap 1.5 detik, tanya server "keranjang token ini udah ada isinya belum"
 setInterval(() => {
     fetch(`/checkout/cart-state/${token}`)
         .then(res => res.json())
@@ -188,7 +183,7 @@ setInterval(() => {
 }, 1500);
 
 
-// ==================== SCAN MANUAL ====================
+// SCAN MANUAL 
 
 document.getElementById('btn-manual-scan').addEventListener('click', function() {
     const code = document.getElementById('manual-barcode').value.trim();
@@ -207,7 +202,7 @@ document.getElementById('btn-manual-scan').addEventListener('click', function() 
 });
 
 
-// ==================== RENDER KERANJANG ====================
+// RENDER KERANJANG 
 
 function renderCart(cart) {
     const list = document.getElementById('cart-list');
@@ -251,24 +246,22 @@ function renderCart(cart) {
 }
 
 
-// ==================== UPDATE QTY ====================
+// UPDATE QTY 
 
 function updateQty(productId, quantity) {
     apiPost('{{ route("checkout.cart.update") }}', { product_id: productId, quantity: quantity })
         .then(data => {
             if (data.success) {
                 renderCart(data.cart);
-            } else {
-                // <== FIX: sebelumnya kalau gagal (misal stok kurang), nggak ada
-                // pesan apapun ke user - tombol + kelihatan kayak nggak ngapa-ngapain.
+            } else {.
                 Swal.fire({ icon: 'error', title: 'Gagal', text: data.message, timer: 1800, showConfirmButton: false });
-                if (data.cart) renderCart(data.cart); // tetep sinkronin tampilan ke qty yang valid
+                if (data.cart) renderCart(data.cart);
             }
         });
 }
 
 
-// ==================== CEK MEMBER ====================
+// CEK MEMBER
 
 document.getElementById('btn-check-member').addEventListener('click', function() {
     const phone = document.getElementById('member-phone').value.trim();
@@ -288,8 +281,7 @@ document.getElementById('btn-check-member').addEventListener('click', function()
 });
 
 
-// ==================== QRIS ====================
-
+// QRIS
 document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
     radio.addEventListener('change', function() {
         document.getElementById('qris-dummy').classList.toggle('d-none', this.value !== 'qris');
@@ -297,7 +289,7 @@ document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
 });
 
 
-// ==================== PEMBAYARAN ====================
+// PEMBAYARAN
 
 document.getElementById('btn-confirm-payment').addEventListener('click', function() {
     const method = document.querySelector('input[name="payment_method"]:checked').value;

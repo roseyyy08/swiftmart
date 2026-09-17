@@ -1,14 +1,4 @@
-{{--
-    Modal "Scan Barcode" buat form Produk (admin).
-    Dipakai bareng di create.blade.php & edit.blade.php lewat @include,
-    biar logic-nya nggak keduplikasi/ke-fork jadi 2 versi beda.
 
-    Alasan fitur ini ada: di dunia nyata, nomor barcode produk itu SUDAH
-    ditentukan pabrik (GTIN/EAN-13) dan tercetak di kemasan - admin toko
-    nggak pernah ngetik manual, tinggal SCAN barcode yang ada di dus
-    barang baru. Form ini pakai kamera device yang lagi buka halaman ini
-    (laptop/HP admin), teknik yang sama kayak QuaggaJS di Self-Checkout.
---}}
 <button type="button" class="btn-swift-ghost" data-bs-toggle="modal" data-bs-target="#barcodeScanModal">
     <i class="bi bi-upc-scan"></i> Scan
 </button>
@@ -21,74 +11,55 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body text-center">
-                <p class="text-muted small mb-2">Arahkan kamera ke barcode di kemasan produk</p>
-                <div id="product-scanner-area" style="width:100%; height:280px; background:#000; border-radius:10px; overflow:hidden;"></div>
-                <div id="product-scan-status" class="mt-2 small text-muted">Menyalakan kamera...</div>
+                <p class="mb-1">Buka alamat ini di browser HP kamu:</p>
+                <p class="fs-6 fw-bold" style="word-break: break-all;">{{ url('/admin-scan/' . config('services.kiosk_token')) }}</p>
+                <p class="text-muted small">Pastikan HP terhubung ke WiFi yang sama dengan laptop ini.</p>
+                <hr style="border-color: var(--card-border);">
+                <div id="barcode-scan-status" class="alert alert-secondary">Menunggu scan dari HP...</div>
             </div>
-        </div>
+        </div> 
     </div>
 </div>
 
-@once
-    {{-- @once supaya kalau ada 2 @include di halaman yang sama, script/library-nya cuma dimuat sekali --}}
-    <script src="https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js"></script>
-    <script>
-    (function () {
-        const modalEl = document.getElementById('barcodeScanModal');
-        const statusEl = document.getElementById('product-scan-status');
-        let quaggaRunning = false;
+<script>
+(function () {
+    const modalEl = document.getElementById('barcodeScanModal');
+    const statusEl = document.getElementById('barcode-scan-status');
+    const adminScanToken = '{{ config('services.kiosk_token') }}';
+    let pollTimer = null;
+    let baselineTs = 0; 
 
-        // Init kamera pas modal BENERAN kebuka (bukan pas halaman diload),
-        // supaya nggak minta izin kamera kalau admin nggak jadi pakai fitur ini.
-        modalEl.addEventListener('shown.bs.modal', function () {
-            statusEl.textContent = 'Menyalakan kamera...';
+    function poll() {
+        fetch('{{ url('/admin-scan') }}/' + adminScanToken + '/poll')
+            .then(res => res.json())
+            .then(data => {
+                if (data.barcode && data.ts > baselineTs) {
+                    document.getElementById('barcode').value = data.barcode;
+                    statusEl.textContent = 'Terisi otomatis: ' + data.barcode;
+                    statusEl.className = 'alert alert-success';
+                    baselineTs = data.ts;
 
-            Quagga.init({
-                inputStream: {
-                    type: 'LiveStream',
-                    target: document.querySelector('#product-scanner-area'),
-                    constraints: { width: 640, height: 480, facingMode: 'environment' }
-                },
-                locator: { patchSize: 'medium', halfSample: true },
-                numOfWorkers: 2,
-                frequency: 10,
-                decoder: { readers: ['ean_reader', 'ean_8_reader', 'code_128_reader'] },
-                locate: true
-            }, function (err) {
-                if (err) {
-                    console.error('QUAGGA ERROR:', err);
-                    statusEl.textContent = 'Kamera tidak tersedia di device ini. Ketik manual di kolom Barcode.';
-                    return;
+                    setTimeout(function () {
+                        bootstrap.Modal.getInstance(modalEl).hide();
+                    }, 600);
                 }
-                Quagga.start();
-                quaggaRunning = true;
-                statusEl.textContent = 'Arahkan kamera ke barcode...';
             });
-        });
+    }
 
-        // Matiin kamera pas modal ditutup (baik berhasil scan ataupun dibatalkan admin),
-        // biar kamera nggak nyala terus-terusan di background.
-        modalEl.addEventListener('hidden.bs.modal', function () {
-            if (quaggaRunning) {
-                Quagga.stop();
-                quaggaRunning = false;
-            }
-        });
+    modalEl.addEventListener('shown.bs.modal', function () {
+        statusEl.textContent = 'Menunggu scan dari HP...';
+        statusEl.className = 'alert alert-secondary';
 
-        Quagga.onDetected(function (result) {
-            if (!quaggaRunning) return; // udah kedeteksi/lagi nutup modal, abaikan sisa frame
-            quaggaRunning = false;
+        fetch('{{ url('/admin-scan') }}/' + adminScanToken + '/poll')
+            .then(res => res.json())
+            .then(data => {
+                baselineTs = data.ts || 0;
+                pollTimer = setInterval(poll, 1500);
+            });
+    });
 
-            const code = result.codeResult.code;
-            document.getElementById('barcode').value = code;
-            statusEl.textContent = 'Terdeteksi: ' + code;
-
-            Quagga.stop();
-
-            setTimeout(function () {
-                bootstrap.Modal.getInstance(modalEl).hide();
-            }, 400);
-        });
-    })();
-    </script>
-@endonce
+    modalEl.addEventListener('hidden.bs.modal', function () {
+        if (pollTimer) clearInterval(pollTimer);
+    });
+})();
+</script>

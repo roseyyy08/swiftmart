@@ -39,7 +39,7 @@ class MemberController extends Controller
             'phone' => 'required|string',
         ], [
             'name.required' => 'Nama harus diisi!',
-            'phone.required' => 'Nomor telepn harus diisi!',
+            'phone.required' => 'Nomor telepon harus diisi!',
         ]);
 
         Member::create([
@@ -79,7 +79,7 @@ class MemberController extends Controller
             'phone' => 'required|string',
         ], [
             'name.required' => 'Nama harus diisi!',
-            'phone.required' => 'Nomor telepn harus diisi!',
+            'phone.required' => 'Nomor telepon harus diisi!',
         ]);
 
         $member = Member::findOrFail($id);

@@ -145,7 +145,7 @@
             height: 100%;
         }
         .stat-card-label { color: var(--text-muted); font-size: .82rem; font-weight: 600; margin-bottom: 10px; }
-        .stat-card-value { font-family: 'Playfair Display', serif; font-size: 1.7rem; font-weight: 700; color: var(--text); }
+        .stat-card-value { font-family: 'Nunito', sans-serif; font-size: 1.7rem; font-weight: 800; color: var(--text); }
         .stat-card-icon {
             width: 36px; height: 36px;
             border-radius: 8px;
