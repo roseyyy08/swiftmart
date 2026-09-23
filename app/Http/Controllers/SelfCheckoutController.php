@@ -21,10 +21,8 @@ class SelfCheckoutController extends Controller
 
     return view('checkout.index', compact('token'));
     }
-
     public function scanDevice($token)
     {
-        
     if (!cache()->has("kiosk_{$token}")) {
         cache()->forever("kiosk_{$token}", ['cart' => [], 'member' => null]);
     }
@@ -39,45 +37,44 @@ class SelfCheckoutController extends Controller
     }
 
     public function scan(Request $request)
-    {
-   
-        $request->validate([
-            'token' => 'required|string',
-            'barcode' => 'required|string',
-        ]);
+{
+    $request->validate([
+        'token' => 'required|string',
+        'barcode' => 'required|string',
+    ]);
 
-        $key = "kiosk_{$request->token}";
-        $state = cache()->get($key, ['cart' => [], 'member' => null]);
+    $key = "kiosk_{$request->token}";
+    $state = cache()->get($key, ['cart' => [], 'member' => null]);
 
-        $product = Product::where('barcode', $request->barcode)->first();
+    $product = Product::where('barcode', $request->barcode)->first();
 
-        if (!$product) {
-            return response()->json(['success' => false, 'message' => 'Produk tidak ditemukan!']);
-        }
+    if (!$product) {
+        return response()->json(['success' => false, 'message' => 'Produk tidak ditemukan!']);
+    }
 
-        if (!$product->is_active) {
-            return response()->json(['success' => false, 'message' => 'Produk ini sedang tidak dijual!']);
-        }
+    if (!$product->is_active) {
+        return response()->json(['success' => false, 'message' => 'Produk ini sedang tidak dijual!']);
+    }
 
-        $qtyDiKeranjang = $state['cart'][$product->id]['quantity'] ?? 0;
+    $qtyDiKeranjang = $state['cart'][$product->id]['quantity'] ?? 0;
 
-        if ($qtyDiKeranjang + 1 > $product->stock) {
-            return response()->json(['success' => false, 'message' => "Stok {$product->name} tidak cukup! Sisa stok: {$product->stock}"]);
-        }
+    if ($qtyDiKeranjang + 1 > $product->stock) {
+        return response()->json(['success' => false, 'message' => "Stok {$product->name} tidak cukup! Sisa stok: {$product->stock}"]);
+    }
 
-        if (isset($state['cart'][$product->id])) {
-            $state['cart'][$product->id]['quantity']++;
-        } else {
-            $state['cart'][$product->id] = [
-                'name' => $product->name,
-                'price' => $product->price,
-                'quantity' => 1,
-            ];
-        }
+    if (isset($state['cart'][$product->id])) {
+        $state['cart'][$product->id]['quantity']++;
+    } else {
+        $state['cart'][$product->id] = [
+            'name' => $product->name,
+            'price' => $product->price,
+            'quantity' => 1,
+        ];
+    }
 
-        cache()->forever($key, $state);
+    cache()->forever($key, $state); 
 
-        return response()->json(['success' => true, 'cart' => $state['cart']]);
+    return response()->json(['success' => true, 'cart' => $state['cart']]);
     }
 
     public function updateCart(Request $request)
@@ -105,8 +102,7 @@ class SelfCheckoutController extends Controller
             $state['cart'][$productId]['quantity'] = $quantity;
         }
 
-        cache()->forever($key, $state);
-
+        cache()->forever($key, $state); 
         return response()->json(['success' => true, 'cart' => $state['cart']]);
     }
 
@@ -136,7 +132,7 @@ class SelfCheckoutController extends Controller
     {
         $request->validate([
             'token' => 'required|string',
-            'payment_method' => 'required|in:cash,debit,qris',
+            'payment_method' => 'required|in:debit,qris',
         ]);
 
         $key = "kiosk_{$request->token}";
@@ -193,7 +189,7 @@ class SelfCheckoutController extends Controller
             return $transaction;
         });
 
-        cache()->forever($key, ['cart' => [], 'member' => null]);
+        cache()->forever($key, ['cart' => [], 'member' => null]); 
 
         return response()->json([
             'success' => true,

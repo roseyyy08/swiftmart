@@ -39,7 +39,6 @@
             <label class="form-label">Metode Bayar</label>
             <select name="payment_method" class="form-select">
                 <option value="">Semua</option>
-                <option value="cash" {{ request('payment_method') == 'cash' ? 'selected' : '' }}>Tunai</option>
                 <option value="debit" {{ request('payment_method') == 'debit' ? 'selected' : '' }}>Debit</option>
                 <option value="qris" {{ request('payment_method') == 'qris' ? 'selected' : '' }}>QRIS</option>
             </select>

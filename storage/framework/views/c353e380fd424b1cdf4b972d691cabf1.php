@@ -17,7 +17,7 @@
                 <hr style="border-color: var(--card-border);">
                 <div id="barcode-scan-status" class="alert alert-secondary">Menunggu scan dari HP...</div>
             </div>
-        </div>
+        </div> 
     </div>
 </div>
 

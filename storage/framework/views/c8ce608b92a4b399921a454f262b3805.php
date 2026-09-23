@@ -11,7 +11,6 @@
             </div>
             <div class="modal-body">
 
-                
                 <div id="restock-step-scan">
                     <p class="mb-1 text-center">Buka alamat ini di browser HP kamu:</p>
                     <p class="fs-6 fw-bold text-center" style="word-break: break-all;"><?php echo e(url('/admin-scan/' . config('services.kiosk_token'))); ?></p>
@@ -24,7 +23,6 @@
                     </div>
                 </div>
 
-                
                 <div id="restock-step-found" class="d-none text-center">
                     <i class="bi bi-check-circle-fill text-success fs-1"></i>
                     <h5 class="mt-2 mb-0" id="restock-product-name">-</h5>
@@ -41,7 +39,6 @@
                     </button>
                 </div>
 
-                
                 <div id="restock-step-notfound" class="d-none text-center">
                     <i class="bi bi-question-circle-fill text-warning fs-1"></i>
                     <p class="mt-2">Barcode <strong id="restock-notfound-code"></strong> belum terdaftar.</p>
@@ -52,7 +49,6 @@
                     </button>
                 </div>
 
-                
                 <div id="restock-step-success" class="d-none text-center">
                     <i class="bi bi-check-circle-fill text-success fs-1"></i>
                     <p class="mt-2"><strong id="restock-success-name"></strong></p>

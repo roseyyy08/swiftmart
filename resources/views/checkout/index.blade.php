@@ -11,8 +11,8 @@
         <div class="col-md-7">
             <div class="card mb-3">
                 <div class="card-body text-center">
-                    <h5 class="card-title"><i class="bi bi-phone"></i> Scan dengan Handphone</h5>
-                    <p class="mb-1">Buka alamat ini di browser Handphone:</p>
+                    <h5 class="card-title"><i class="bi bi-phone"></i> Scan pakai HP</h5>
+                    <p class="mb-1">Buka alamat ini di browser HP kamu:</p>
                     <p class="fs-5 fw-bold">{{ url('/checkout/pair/' . $token) }}</p>
                     <p class="text-muted small">Pastikan HP terhubung ke WiFi yang sama.</p>
                 </div>
@@ -92,16 +92,8 @@
                 <div class="btn-group w-100 mb-3" role="group">
 
                     <input type="radio" class="btn-check"
-                        name="payment_method" id="pay-cash"
-                        value="cash" autocomplete="off" checked>
-
-                    <label class="btn btn-outline-dark" for="pay-cash">
-                        Tunai
-                    </label>
-
-                    <input type="radio" class="btn-check"
                         name="payment_method" id="pay-debit"
-                        value="debit" autocomplete="off">
+                        value="debit" autocomplete="off" checked>
 
                     <label class="btn btn-outline-dark" for="pay-debit">
                         Debit
@@ -159,8 +151,7 @@
 @section('scripts')
 <script>
 const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-const token = '{{ $token }}'; 
-
+const token = '{{ $token }}';
 function apiPost(url, data) {
     return fetch(url, {
         method: 'POST',
@@ -169,7 +160,7 @@ function apiPost(url, data) {
             'X-CSRF-TOKEN': csrfToken,
             'Accept': 'application/json'
         },
-        body: JSON.stringify({ ...data, token })
+        body: JSON.stringify({ ...data, token }) 
     }).then(res => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
@@ -183,7 +174,7 @@ setInterval(() => {
 }, 1500);
 
 
-// SCAN MANUAL 
+// SCAN MANUAL
 
 document.getElementById('btn-manual-scan').addEventListener('click', function() {
     const code = document.getElementById('manual-barcode').value.trim();
@@ -202,8 +193,7 @@ document.getElementById('btn-manual-scan').addEventListener('click', function() 
 });
 
 
-// RENDER KERANJANG 
-
+// RENDER KERANJANG
 function renderCart(cart) {
     const list = document.getElementById('cart-list');
     const totalEl = document.getElementById('cart-total');
@@ -253,9 +243,9 @@ function updateQty(productId, quantity) {
         .then(data => {
             if (data.success) {
                 renderCart(data.cart);
-            } else {.
+            } else {
                 Swal.fire({ icon: 'error', title: 'Gagal', text: data.message, timer: 1800, showConfirmButton: false });
-                if (data.cart) renderCart(data.cart);
+                if (data.cart) renderCart(data.cart); 
             }
         });
 }
@@ -281,7 +271,8 @@ document.getElementById('btn-check-member').addEventListener('click', function()
 });
 
 
-// QRIS
+// QRIS 
+
 document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
     radio.addEventListener('change', function() {
         document.getElementById('qris-dummy').classList.toggle('d-none', this.value !== 'qris');
