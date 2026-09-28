@@ -17,7 +17,7 @@
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startSection('scripts'); ?>
-<script src="https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js"></script>
+<script src="<?php echo e(asset('vendor/quagga/quagga.min.js')); ?>"></script>
 <script>
 const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 const token = '<?php echo e($token); ?>';
@@ -66,11 +66,11 @@ function sendScan(barcode) {
             isProcessing = false;
             Quagga.start();
             showStatus('Siap scan...', true);
-        }, 1200); // <== jeda cooldown biar nggak dobel-dobel
+        }, 1200);
     });
 }
 
-// ==================== SCANNER ====================
+// SCANNER
 
 Quagga.init({
     inputStream: {
@@ -79,9 +79,8 @@ Quagga.init({
         constraints: {
             width: 1280,
             height: 720,
-            facingMode: 'environment' // kamera belakang HP
+            facingMode: 'environment'
         },
-        // area: { top: "20%", right: "10%", left: "10%", bottom: "20%" }
     },
     locator: { patchSize: 'medium', halfSample: true },
     numOfWorkers: 2,
@@ -98,21 +97,20 @@ Quagga.init({
     Quagga.start();
 });
 
-// ==================== DETEKSI + LOCK (INI FIX ANTI DOBEL-SCAN) ====================
+// DETEKSI + LOCK 
 
 let isProcessing = false;
 
 Quagga.onDetected(function(result) {
-    if (isProcessing) return; // lagi ada proses jalan -> abaikan deteksi lain
+    if (isProcessing) return; 
 
     isProcessing = true;
-    Quagga.pause(); // stop baca frame sepenuhnya sampai proses ini kelar
+    Quagga.pause(); 
 
     sendScan(result.codeResult.code);
 });
 
-// ==================== SCAN MANUAL (di HP juga ada, buat cadangan) ====================
-
+// SCAN MANUAL 
 document.getElementById('btn-manual-scan').addEventListener('click', function() {
     const code = document.getElementById('manual-barcode').value.trim();
     if (!code) return;

@@ -18,7 +18,7 @@
 @endsection
 
 @section('scripts') 
-    <script src="https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js"></script>
+    <script src="{{ asset('vendor/quagga/quagga.min.js') }}"></script>
     <script>
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
     const token = '{{ $token }}';
